@@ -635,8 +635,8 @@ int SrsGopCache::cache(SrsSharedPtrMessage* shared_msg)
     // got video, update the video count if acceptable
     if (msg->is_video()) {
         // drop video when not h.264
-        if (!SrsFlvCodec::video_is_h264(msg->payload, msg->size)) {
-            srs_info("gop cache drop video for none h.264");
+        if (!SrsFlvCodec::video_is_h264(msg->payload, msg->size) && !SrsFlvCodec::video_is_h265(msg->payload, msg->size)) {
+            srs_info("gop cache drop video for none h.264/h2.65");
             return ret;
         }
         
@@ -1909,29 +1909,29 @@ int SrsSource::on_video_imp(SrsSharedPtrMessage* msg)
         cache_sh_video = msg->copy();
         
         // parse detail audio codec
-        SrsAvcAacCodec codec;
+        // SrsAvcAacCodec codec;
         
-        // user can disable the sps parse to workaround when parse sps failed.
-        // @see https://github.com/ossrs/srs/issues/474
-        codec.avc_parse_sps = _srs_config->get_parse_sps(_req->vhost);
+        // // user can disable the sps parse to workaround when parse sps failed.
+        // // @see https://github.com/ossrs/srs/issues/474
+        // codec.avc_parse_sps = _srs_config->get_parse_sps(_req->vhost);
         
-        SrsCodecSample sample;
-        if ((ret = codec.video_avc_demux(msg->payload, msg->size, &sample)) != ERROR_SUCCESS) {
-            srs_error("source codec demux video failed. ret=%d", ret);
-            return ret;
-        }
+        // SrsCodecSample sample;
+        // if ((ret = codec.video_avc_demux(msg->payload, msg->size, &sample)) != ERROR_SUCCESS) {
+        //     srs_error("source codec demux video failed. ret=%d", ret);
+        //     return ret;
+        // }
         
-        // when got video stream info.
-        SrsStatistic* stat = SrsStatistic::instance();
-        if ((ret = stat->on_video_info(_req, SrsCodecVideoAVC, codec.avc_profile, codec.avc_level)) != ERROR_SUCCESS) {
-            return ret;
-        }
+        // // when got video stream info.
+        // SrsStatistic* stat = SrsStatistic::instance();
+        // if ((ret = stat->on_video_info(_req, SrsCodecVideoAVC, codec.avc_profile, codec.avc_level)) != ERROR_SUCCESS) {
+        //     return ret;
+        // }
         
-        srs_trace("%dB video sh,  codec(%d, profile=%s, level=%s, %dx%d, %dkbps, %dfps, %ds)",
-            msg->size, codec.video_codec_id,
-            srs_codec_avc_profile2str(codec.avc_profile).c_str(),
-            srs_codec_avc_level2str(codec.avc_level).c_str(), codec.width, codec.height,
-            codec.video_data_rate / 1000, codec.frame_rate, codec.duration);
+        // srs_trace("%dB video sh,  codec(%d, profile=%s, level=%s, %dx%d, %dkbps, %dfps, %ds)",
+        //     msg->size, codec.video_codec_id,
+        //     srs_codec_avc_profile2str(codec.avc_profile).c_str(),
+        //     srs_codec_avc_level2str(codec.avc_level).c_str(), codec.width, codec.height,
+        //     codec.video_data_rate / 1000, codec.frame_rate, codec.duration);
     }
     
 #ifdef SRS_AUTO_HLS

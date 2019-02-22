@@ -109,6 +109,7 @@ enum SrsCodecVideo
     SrsCodecVideoOn2VP6WithAlphaChannel = 5,
     SrsCodecVideoScreenVideoVersion2     = 6,
     SrsCodecVideoAVC                     = 7,
+    SrsCodecVideoHEVC                    = 12,
 };
 std::string srs_codec_video2str(SrsCodecVideo codec);
 
@@ -218,6 +219,7 @@ public:
     * check codec h264.
     */
     static bool video_is_h264(char* data, int size);
+    static bool video_is_h265(char* data, int size);
     /**
     * check codec aac.
     */
